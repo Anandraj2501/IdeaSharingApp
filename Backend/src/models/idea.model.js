@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const ideaSchema = new Schema(
     {
@@ -12,8 +12,9 @@ const ideaSchema = new Schema(
             required: true
         },
         tags: [String],
+        images:[String],
         owner: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: 'User',
             required: true
         }
