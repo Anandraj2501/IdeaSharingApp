@@ -33,9 +33,36 @@ const addIdea = asyncHandler(async (req, res, next) => {
 
 
 const getIdea = asyncHandler(async (req, res, next) => {
-    const data = await Idea.find();
+    const {pages=1, limit=10} = req.query
 
-    res.status(201).json(new ApiResponse(201, data, "Data Retrieved"));
+    const pageNum = parseInt(pages, 10);
+    const limitNum = parseInt(limit, 10);
+
+    const skip = (pageNum - 1) * limitNum;
+
+    // Get total count of ideas
+    const totalIdeas = await Idea.countDocuments();
+
+    // Fetch the paginated ideas
+    const ideas = await Idea.find()
+        .skip(skip)
+        .limit(limitNum)
+        .sort({ createdAt: -1 }); // Optionally, sort by created date
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalIdeas / limitNum);
+
+    // Return paginated data
+    res.status(200).json(new ApiResponse(200,{
+        ideas,
+        pagination: {
+            totalIdeas,
+            totalPages,
+            currentPage: pageNum,
+            perPage: limitNum
+        }}, "Ideas fetched successfully"
+    ));
+
 })
 
 const updateIdea = asyncHandler(async (req, res, next) => {
@@ -80,4 +107,5 @@ const deleteIdea = asyncHandler(async (req, res, next) => {
     // Send a success response
     res.status(200).json(new ApiResponse(200, "Idea deleted successfully"));
 })
+
 export { addIdea, getIdea, updateIdea, deleteIdea };

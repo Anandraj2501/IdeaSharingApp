@@ -1,9 +1,13 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import healtCheckRouter from "./routes/healthcheck.routes.js";
 import userRegister from "./routes/user.routes.js";
 import ideas from "./routes/idea.routes.js";
 import cookieParser from "cookie-parser";
+dotenv.config({
+    path: "./.env"
+})
 
 const app = express();
 

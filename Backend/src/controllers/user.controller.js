@@ -8,9 +8,7 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 
 const generateAccessAndRefereshTokens = async(userId) =>{
     try {
-        console.log(userId);
         const user = await User.findById(userId)
-        console.log(user);
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
 
@@ -28,15 +26,20 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 
 const registerUser = asyncHandler(async (req, res) => {
 
-    const { username, email, password, isAdmin } = req.body
+    const { firstName,lastName, email, password, isAdmin } = req.body
+    const username = firstName+lastName;
 
-    if (!username || !email || !password) {
-        throw new APiError(400, "All fields are required");
+    if (!firstName || !email || !password) {
+        return res.status(400).json(
+            new ApiResponse(200, {}, "All fields are required")
+        )
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        throw new APiError(400, "User with email already exists");
+        return res.status(400).json(
+            new ApiResponse(200, {}, "User with email already exists")
+        )
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
@@ -66,7 +69,9 @@ const registerUser = asyncHandler(async (req, res) => {
     )
 
     if (!createdUser) {
-        throw new APiError(500, "Something went wrong while registering the user")
+        return res.status(500).json(
+            new ApiResponse(200, {}, "Something went wrong while registering the user")
+        )
     }
 
     return res.status(201).json(
@@ -79,19 +84,25 @@ const loginUser = asyncHandler(async (req, res, next) => {
     const {email, password} = req.body;
 
     if(!email || !password){
-        throw new APiError(400,"Email or Password is missing");
+        return res.status(400).json(
+            new ApiResponse(200, {}, "Email or Password is missing")
+        )
     }
 
     const user = await User.findOne({email});
 
     if(!user){
-        throw new APiError(404,"User with email do not exists");
+        return res.status(404).json(
+            new ApiResponse(200, {}, "User with email do not exists")
+        )
     }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
 
     if(!isPasswordCorrect){
-        throw new APiError(401,"Password is incorrect");
+        return res.status(401).json(
+            new ApiResponse(200, {}, "Password is incorrect")
+        )
     }
 
     const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id);

@@ -1,17 +1,17 @@
-import logo from './logo.svg';
+import { useContext } from 'react';
 import './App.css';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Navbar from './components/NavBar/Navbar';
-import Postcard from './components/cards/Postcard';
-import Login from './components/login/Login';
+import Login from './Component/Login/Login';
+import Logintwo from './Component/Login/Logintwo';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import { userContext } from './utils/userContext';
 
 function App() {
   return (
     <>
-    <Login/>
-      {/* <Navbar/>
-      <Postcard/> */}
+      <Routes>
+        <Route path="/login" element={<Logintwo />} />
+      </Routes>
     </>
   );
 
